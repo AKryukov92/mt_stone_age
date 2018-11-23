@@ -730,6 +730,19 @@ end
 
 -- Register nodes
 
+function hit_stone(pos, node)
+	--Increase punch count of node
+	node.param2 = node.param2 + 1
+	if node.param2 >= 3 then
+		--Remove if node punched 3 times
+		minetest.remove_node(pos)
+	else
+		--Update node param1
+		minetest.set_node(pos, node)
+	end
+end
+
+
 local function stone_on_punch(pos, node, puncher, pointed_thing)
 	--If punched by rubble:rubble_stone
 	local wielded_item = puncher:get_wielded_item()
@@ -737,16 +750,7 @@ local function stone_on_punch(pos, node, puncher, pointed_thing)
 	if wielded_item:get_name() == "rubble:rubble_stone" then
 		-- Drop rubble:rubble_stone as item nearby
 		minetest.add_item(puncher:get_pos(), "rubble:rubble_stone")
-		--Increase punch count of node
-		node.param2 = node.param2 + 1
-		
-		if node.param2 >= 3 then
-			--Remove if node punched 3 times
-			minetest.remove_node(pos)
-		else
-			--Update node param1
-			minetest.set_node(pos, node)
-		end
+		hit_stone(pos, node)
 	end
 	-- Check adjacent nodes by faces.
 	-- If adj_node has no adjacent connections to other nodes of same type
